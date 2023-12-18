@@ -6,6 +6,7 @@
 
 #include <complex>
 #include <map>
+#include <cstdint>
 #include <string>
 
 namespace fast_matrix_market {
@@ -87,6 +88,13 @@ namespace fast_matrix_market {
          * hermitian: for (row, column, value), also generate (column, row, complex_conjugate(value)) except if row==column
          */
         bool generalize_symmetry = true;
+
+        /**
+         * If true, perform symmetry generalization in the application binding as a post-processing step.
+         * If supported by the binding this method can avoid extra diagonal elements.
+         * If false or unsupported, diagonals are handled according to `generalize_coordinate_diagnonal_values`.
+         */
+        bool generalize_symmetry_app = true;
 
         /**
          * Generalize Symmetry:

@@ -5,12 +5,13 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "fast-matrix-market"
-version = "1.7.4"
+version = "1.7.6"
 description="Fast and full-featured Matrix Market file I/O"
 readme = "README.md"
 authors = [
     { name = "Adam Lugowski"},
 ]
+license-files = ["LICENSE.txt"]
 requires-python = ">=3.7"
 
 classifiers = [

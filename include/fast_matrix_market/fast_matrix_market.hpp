@@ -14,6 +14,7 @@
 #include <string>
 #include <sstream>
 #include <utility>
+#include <vector>
 
 #include "types.hpp"
 
@@ -26,7 +27,7 @@ namespace fast_matrix_market {
     // Keep in sync with python/pyproject.toml
 #define FAST_MATRIX_MARKET_VERSION_MAJOR 1
 #define FAST_MATRIX_MARKET_VERSION_MINOR 7
-#define FAST_MATRIX_MARKET_VERSION_PATCH 4
+#define FAST_MATRIX_MARKET_VERSION_PATCH 6
 
     constexpr std::string_view kSpace = " ";
     constexpr std::string_view kNewline = "\n";
@@ -116,6 +117,10 @@ namespace fast_matrix_market {
      * MSVC does not like std::negate<bool>
      */
     inline bool negate(const bool o) {
+        return !o;
+    }
+
+    inline bool negate(const std::vector<bool>::reference o) {
         return !o;
     }
 

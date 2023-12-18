@@ -13,24 +13,71 @@ jobs:
       matrix:
         include:
           - os: windows-latest
+
+          - os: windows-latest
+            mingw-version: "13.2.0"
+            description: "MinGW 13"
+            cmake-flags: '-G "MinGW Makefiles"'
+
+          - os: ubuntu-20.04
+            llvm-version: "8"
+            description: "LLVM 8"
+
+          - os: ubuntu-20.04
+            gcc-version: "8"
+            description: "GCC 8"
+
           - os: ubuntu-latest
+            gcc-version: "9"
+            # test minimum CMake version specified in CMakeLists.txt
+            cmake-version: '3.14'
+            description: "GCC 9"
+
           - os: ubuntu-latest
-            gccver: "13"
+            gcc-version: "13"
+            cmake-version: '3.14'
             description: "GCC 13"
+
           - os: macos-latest
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up GCC
+    - name: Setup GCC
       uses: egor-tensin/setup-gcc@v1
-      if: ${{ matrix.gccver != '' }}
+      if: ${{ matrix.gcc-version != '' }}
       with:
-        version: ${{ matrix.gccver }}
+        version: ${{ matrix.gcc-version }}
+
+    - name: Setup MinGW (Windows)
+      if: contains(matrix.os, 'windows') && matrix.mingw-version != ''
+      run: |
+        choco install --no-progress mingw --version ${{ matrix.mingw-version }}
+        Add-Content $env:GITHUB_PATH "C:\ProgramData\mingw64\mingw64\bin"
+
+    - name: Setup LLVM and Clang
+      uses: KyleMayes/install-llvm-action@v1
+      if: ${{ matrix.llvm-version != '' }}
+      with:
+        version: ${{ matrix.llvm-version }}
+        env: true
+
+    - name: Setup cmake
+      uses: jwlawson/actions-setup-cmake@v1
+      if: ${{ matrix.cmake-version != '' }}
+      with:
+        cmake-version: ${{ matrix.cmake-version }}
+
+    # test that the examples build
+    - name: Build examples
+      working-directory: examples
+      run: |
+        cmake -S . -B cmake-build-debug/ -D CMAKE_BUILD_TYPE=Debug ${{ matrix.cmake-flags }}
+        cmake --build cmake-build-debug/
 
     - name: Install Integrations (Ubuntu)
       if: contains(matrix.os, 'ubuntu')
-      run: sudo apt-get install -y libarmadillo-dev
+      run: sudo apt-get update && sudo apt-get install -y libarmadillo-dev
 
     - name: Install GraphBLAS (ubuntu)
       if: contains(matrix.os, 'ubuntu')
@@ -39,9 +86,9 @@ jobs:
       run: |
         mkdir -p grb
         cd grb
-        wget --quiet https://anaconda.org/conda-forge/graphblas/7.4.4/download/linux-64/graphblas-7.4.4-hcb278e6_0.conda
-        unzip graphblas-7.4.4-hcb278e6_0.conda
-        tar xvf pkg-graphblas-7.4.4-hcb278e6_0.tar.zst
+        wget --quiet https://anaconda.org/conda-forge/graphblas/8.2.1/download/linux-64/graphblas-8.2.1-h59595ed_0.conda
+        unzip graphblas-8.2.1-h59595ed_0.conda
+        tar xvf pkg-graphblas-8.2.1-h59595ed_0.tar.zst
         cd ..
         echo "FMM_CMAKE_FLAGS=-DCMAKE_MODULE_PATH=${{ github.workspace }}/grb/lib/cmake/SuiteSparse -DGraphBLAS_ROOT=${{ github.workspace }}/grb/" >> $GITHUB_ENV
 
@@ -52,7 +99,7 @@ jobs:
 
     - name: Configure
       run: |
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DFAST_MATRIX_MARKET_TEST=ON -DFAST_MATRIX_MARKET_TEST_COVERAGE=ON ${{ env.FMM_CMAKE_FLAGS }}
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DFAST_MATRIX_MARKET_TEST=ON -DFAST_MATRIX_MARKET_TEST_COVERAGE=ON ${{ env.FMM_CMAKE_FLAGS }} ${{ matrix.cmake-flags }}
 
     - name: Build
       env:
@@ -82,7 +129,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
