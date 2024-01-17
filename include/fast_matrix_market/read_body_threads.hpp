@@ -118,8 +118,8 @@ namespace fast_matrix_market {
             if (header.format == array) {
                 if constexpr ((FORMAT & compile_array_only) == compile_array_only) {
                     // compute the starting row/column for this array chunk
-                    typename HANDLER::coordinate_type row = lc.element_num % header.nrows;
-                    typename HANDLER::coordinate_type col = lc.element_num / header.nrows;
+                    typename HANDLER::coordinate_type row = static_cast<HANDLER::coordinate_type>(lc.element_num % header.nrows);
+                    typename HANDLER::coordinate_type col = static_cast<HANDLER::coordinate_type>(lc.element_num / header.nrows);
 
                     parse_futures.push(pool.submit([=]() mutable {
                         read_chunk_array(lcr->chunk, header, lc, chunk_handler, options, row, col);
