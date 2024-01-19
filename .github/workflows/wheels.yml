@@ -48,7 +48,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: sdist
+          name: cibw-sdist
           path: python/dist/*.tar.gz
 
 
@@ -114,7 +114,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}
+          name: cibw-wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ strategy.job-index }}
           path: wheelhouse/*.whl
 
 
@@ -127,10 +127,9 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          path: dist_artifacts
-
-      - name: Flatten artifacts to dist/
-        run: mkdir dist && find dist_artifacts -type f -exec mv {} dist \;
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
 
       # Upload to PyPI
       - uses: pypa/gh-action-pypi-publish@release/v1
