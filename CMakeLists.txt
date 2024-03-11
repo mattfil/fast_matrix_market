@@ -21,7 +21,7 @@ target_include_directories(
         fast_matrix_market INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-target_compile_features(fast_matrix_market INTERFACE cxx_std_17)
+target_compile_features(fast_matrix_market INTERFACE cxx_std_20)
 
 # Some older compilers (eg. Clang, GCC <9) require extra link flags for C++11 threads
 find_package(Threads)
@@ -98,7 +98,7 @@ endif()
 # float and double formatter for shortest representation. No precision support.
 if (FMM_USE_DRAGONBOX)
     message("Using Dragonbox")
-    add_subdirectory(dependencies/dragonbox)
+    add_subdirectory(dependencies/dragonbox EXCLUDE_FROM_ALL)
 
     target_compile_definitions(fast_matrix_market INTERFACE FMM_USE_DRAGONBOX)
     target_link_libraries(fast_matrix_market INTERFACE dragonbox::dragonbox_to_chars)
@@ -108,7 +108,7 @@ endif()
 # float, double formatter with precision support. Slower than Dragonbox for shortest representation.
 if (FMM_USE_RYU)
     message("Using ryu")
-    add_subdirectory(dependencies/ryu)
+    add_subdirectory(dependencies/ryu EXCLUDE_FROM_ALL)
 
     target_link_libraries(fast_matrix_market INTERFACE ryu::ryu)
     target_compile_definitions(fast_matrix_market INTERFACE FMM_USE_RYU)
