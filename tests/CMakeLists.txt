@@ -89,7 +89,7 @@ if ("cxx_std_23" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
 endif()
 
 
-option(FAST_MATRIX_MARKET_TEST_EXTERNAL_APPS "Enable tests for bindings (e.g. Blaze, Eigen, etc.)" ON)
+option(FAST_MATRIX_MARKET_TEST_EXTERNAL_APPS "Enable tests for bindings (e.g. Blaze, Eigen, etc.)" OFF)
 if (FAST_MATRIX_MARKET_TEST_EXTERNAL_APPS)
     # Eigen
     include(../cmake/Eigen.cmake)

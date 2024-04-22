@@ -5,7 +5,7 @@ include(CheckCXXSourceCompiles)
 # CMP0067: Honor language standard in try_compile() source-file signature.
 # https://cmake.org/cmake/help/latest/policy/CMP0067.html
 cmake_policy(SET CMP0067 NEW)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 # Check for int support
 check_cxx_source_compiles("
